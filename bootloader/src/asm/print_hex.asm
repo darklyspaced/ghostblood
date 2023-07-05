@@ -18,7 +18,7 @@ print_hex:
         cmp al, 0x39 ; compare hex to ASCII 9
         jle replace ; if char is a number, replace it in HEX_OUT
 
-        add al, 0x31 ; 0x30 + 0x31 == 0x61, base for lower case letters ('a')
+        add al, 0x27 ; 0x30 + 0x31 == 0x61, base for lower case letters ('a')
 
     replace:
         mov bx, HEX_OUT + 5 ; set bx to an address that points to last char of HEX_OUT
