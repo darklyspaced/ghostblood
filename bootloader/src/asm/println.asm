@@ -3,7 +3,7 @@
 ; params:
 ;   bx: CStr
 println:
-    start:
+    begin:
         pusha ; push all register values to the stack
         mov ah, 0x0e ; set the subfunction of interrupt 0x10 to teletype output
 
