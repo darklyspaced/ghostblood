@@ -8,32 +8,31 @@ start:
     mov ds, ax          ; segment registers could be any spurious value at boot
     mov es, ax
 
-    mov [B_DRIVE], dl   ; store the bootdrive
-
-    cli                 ; disable CPU interrupts (software interrupts are still enabled)
-    mov ss, ax          ; 8088 had a bug: interrupts were not disabled while modifying ss:(e)sp; interrupts
-                        ; cause %flags to be pushed onto stack and modification of ss:(e)sp != atomic...
-
-    mov bp, 0x7c00      ; sets the stack up at 0x8000. stack grows downwards (towards lower addresses)
-    mov sp, bp          ; and BIOS is above, ending at 0x7e00
+    mov dl, [B_DRIVE]   ; store boot drive for later use
 
     mov bx, BOOTING     ; store the mem address of BOOTING in bx
     call println
 
-    mov dx, dl
-    call print_hex
+    cli                 ; disable CPU interrupts (software interrupts are still enabled)
+    mov ss, ax          ; 8088 had a bug: interrupts were not disabled while modifying ss:(e)sp; interrupts
+                        ; cause %flags to be pushed onto stack and modification of ss:(e)sp != atomic...
+    mov sp, 0x7c00      ; sets the stack up at 0x7c00. stack grows downwards (towards lower addresses)
+    mov bp, sp          ; and BIOS is above, ending at 0x7e00
 
-    mov dx, 0x1234
-    call print_hex
+    mov [B_DRIVE], dl   ; store the bootdrive
 
-    jmp $               ; jump to the current address (infinite loop)
+    mov ch, 5
+    call read_kernel
+
+    hlt                 ; halts the CPU
 
 %include "println.asm"
 %include "print_hex.asm"
+%include "disk.asm"
 
 ; ============= DATA ===============
 BOOTING:
-    db 'Booting Ghostblood',0
+    db '[X] Booting Ghostblood [X]',0
 
 B_DRIVE: ; bootdrive
     db 0
