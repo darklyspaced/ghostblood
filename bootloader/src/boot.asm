@@ -7,6 +7,10 @@ start:
     xor ax, ax          ; set data segment to offset 0 as org is alr set
     mov ds, ax          ; segment registers could be any spurious value at boot
     mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+    cld                 ; clear the direction flag: go forward in memory
 
     mov dl, [B_DRIVE]   ; store boot drive for later use
 
@@ -16,6 +20,7 @@ start:
     cli                 ; disable CPU interrupts (software interrupts are still enabled)
     mov ss, ax          ; 8088 had a bug: interrupts were not disabled while modifying ss:(e)sp; interrupts
                         ; cause %flags to be pushed onto stack and modification of ss:(e)sp != atomic...
+
     mov sp, 0x7c00      ; sets the stack up at 0x7c00. stack grows downwards (towards lower addresses)
     mov bp, sp          ; and BIOS is above, ending at 0x7e00
 
@@ -26,9 +31,9 @@ start:
 
     hlt                 ; halts the CPU
 
-%include "println.asm"
-%include "print_hex.asm"
-%include "disk.asm"
+%include "src/println.asm"
+%include "src/print_hex.asm"
+%include "src/disk.asm"
 
 ; ============= DATA ===============
 BOOTING:
