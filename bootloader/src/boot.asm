@@ -1,9 +1,10 @@
 [org 0x7c00] ; set the offset as CPU assumes that mem offsets are from 0x0000 instead of from start of
              ; binary mem (0x7c00) while in reality they are of the latter. org tells the CPU this
+global _start
 
-jmp 0x000:start         ; perform a long jump to enforce CS:IP
+jmp 0x000:_start         ; perform a long jump to enforce CS:IP
 
-start:
+_start:
     xor ax, ax          ; set data segment to offset 0 as org is alr set
     mov ds, ax          ; segment registers could be any spurious value at boot
     mov es, ax
@@ -13,6 +14,10 @@ start:
     cld                 ; clear the direction flag: go forward in memory
 
     mov dl, [B_DRIVE]   ; store boot drive for later use
+
+    mov ah, 0x00
+    mov al, 0x03
+    int 0x10            ; clear the screen
 
     mov bx, BOOTING     ; store the mem address of BOOTING in bx
     call println
@@ -26,7 +31,7 @@ start:
 
     mov [B_DRIVE], dl   ; store the bootdrive
 
-    mov ch, 5
+    mov ch, 1
     call read_kernel
 
     hlt                 ; halts the CPU
@@ -37,7 +42,7 @@ start:
 
 ; ============= DATA ===============
 BOOTING:
-    db '[X] Booting Ghostblood [X]',0
+    db '[!] Booting Ghostblood [!]',0
 
 B_DRIVE: ; bootdrive
     db 0

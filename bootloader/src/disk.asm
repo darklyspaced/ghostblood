@@ -25,12 +25,12 @@ read_kernel:
     ;   ch: number of sectors to read
     ;
     ;   has to loop and read one sector at a time because some BIOSes can't
-    ;   read across cylinders with one interrupt
+    ;   read across cylinders within one interrupt
     read_kernel_setup:
         pusha
 
         ; setup where to read to
-        mov bx, 0x09c0
+        mov bx, 0x1000
         mov es, bx
         xor bx, bx
 
@@ -43,20 +43,7 @@ read_kernel:
     read_sector:
         int 0x13
 
-        jc failure
-        jnc success
-
-        success:
-            mov bx, SUCCESS
-            call println
-
-            mov dh, al
-            call print_byte
-
-            mov dh, ah
-            call print_byte
-
-            jmp again
+        jnc read_kernel_end
 
         failure:
             mov bx, FAIL
@@ -65,27 +52,10 @@ read_kernel:
             mov dh, ah
             call print_byte
 
-        again:
-            cmp cl, ch
-            jl read_loop ; if we still have more to read
-
-            jmp read_kernel_end ; if we have read all requested
-
-    read_loop:
-        add cl, 1
-        jmp read_sector
-
     read_kernel_end:
         popa
-        jmp 0x09c0:0
+        jmp 0x1000:0x0000
         ret
 
 FAIL:
-    db 'FAILED BITCH',0
-
-SUCCESS:
-    db 'You did it!',0
-
-READ:
-    db 'attempted to read',0
-
+    db '[!] Failed to read from disk with error code:',0
