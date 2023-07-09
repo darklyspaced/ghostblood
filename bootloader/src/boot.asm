@@ -36,9 +36,9 @@ _start:
 
     hlt                 ; halts the CPU
 
-%include "src/println.asm"
-%include "src/print_hex.asm"
-%include "src/disk.asm"
+%include "println.asm"
+%include "print_hex.asm"
+%include "disk.asm"
 
 ; ============= DATA ===============
 BOOTING:

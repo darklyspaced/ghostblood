@@ -8,7 +8,7 @@ kernel_start:
 
     hlt
 
-%include "src/println.asm"
+%include "println.asm"
 
 KERNEL_LOAD:
     db '[!] Loaded kernel into memory [!]',0
