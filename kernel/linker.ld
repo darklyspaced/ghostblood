@@ -1,26 +1,36 @@
-ENTRY(_start) /* define the entry point for the kernel */
-
-PHDRS {
-    headers PT_PHDR FILEHDR PHDRS AT(0x500);
-    code PT_LOAD;
-}
+ENTRY(_start)
 
 SECTIONS {
-    . = 0x100000;
+    . = 0x00100000;
+
     _kernel_start = .;
 
-    .text : { *(.text) } :code
+    .start : {
+        *(.start)
+    }
+    .text : {
+        *(.text .text.*)
+    }
+    .bss : {
+        *(.bss .bss.*)
+    }
+    .rodata : {
+        *(.rodata .rodata.*)
+    }
+    .data : {
+        *(.data .data.*)
+    }
+    .eh_frame : {
+        *(.eh_frame .eh_frame.*)
+    }
+    .eh_frame_hdr : {
+        *(.eh_frame_hdr .eh_frame_hdr.*)
+    }
 
-    .bss : { *(.bss) }
-    .data : { *(.data) }
-
-    /* removes the eh_frame because we don't need it */
-    /DISCARD/ : { *(.eh_frame) }
-
-    /* the kernel is exactly 1MiB (2048 sectors) */
-    . = _kernel_start + 0x100000 - 2;
-    .marker :
+    /* in this way the kernel size is exactly 1MiB (2048 sectors) */
+    . = _kernel_start + 0x00100000 - 2;
+    .end_marker :
     {
-        SHORT(0xface) /* add some thing recognisable to where the end of the kernel should be */
+        SHORT(0xdead)
     }
 }
