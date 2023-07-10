@@ -1,5 +1,5 @@
 [workspace]
-members = ["kernel", "soulcaster"]
+members = ["bootloader", "soulcaster"]
 resolver = "2"
 
 [profile.dev]

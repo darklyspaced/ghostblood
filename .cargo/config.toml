@@ -1,6 +1,6 @@
 [build]
-target = "x86_64-unknown-none"
+target = "x86_64-unknown-uefi"
 
 [alias]
-soulcaster = "run --package soulcaster --target aarch64-apple-darwin --"
-sc = "run --package soulcaster --target aarch64-apple-darwin --"
+soulcaster = "run --package soulcaster"
+sc = "run --package soulcaster --quiet"
