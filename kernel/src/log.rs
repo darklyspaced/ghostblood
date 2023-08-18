@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use bootloader_api::info::{FrameBufferInfo, PixelFormat};
 use font::RasterizedChar;
 use noto_sans_mono_bitmap as font;
@@ -36,6 +34,15 @@ mod style {
     pub const DEFAULT_CHAR: char = '�';
 }
 
+impl core::fmt::Write for Log {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        for c in s.chars() {
+            self.write_char(c);
+        }
+        Ok(())
+    }
+}
+
 /// Get the raster of a character from [`font`]
 fn get_raster(c: char) -> font::RasterizedChar {
     fn rasterise(c: char) -> Option<font::RasterizedChar> {
@@ -50,14 +57,14 @@ fn get_raster(c: char) -> font::RasterizedChar {
 /// Renders text to the screen using the [`FrameBuffer`] provided by the bootloader.
 ///
 /// [`FrameBuffer`]: bootloader_api::info::FrameBuffer
-pub struct Renderer {
+pub struct Log {
     framebuffer: &'static mut [u8],
     info: FrameBufferInfo,
     x: usize,
     y: usize,
 }
 
-impl Renderer {
+impl Log {
     /// Create a new renderer
     pub fn new(framebuffer: &'static mut [u8], info: FrameBufferInfo) -> Self {
         Self {
@@ -93,10 +100,9 @@ impl Renderer {
     fn write_rendered_character(&mut self, rendered_char: RasterizedChar) {
         for (y, row) in rendered_char.raster().iter().enumerate() {
             for (x, byte) in row.iter().enumerate() {
-                self.write_pixel(self.x + x, self.x + y, *byte);
+                self.write_pixel(self.x + x, self.y + y, *byte);
             }
         }
-        // replace with rendered_char.width() if broken
         self.x += style::WIDTH + style::LETTER_SPACING;
     }
 
